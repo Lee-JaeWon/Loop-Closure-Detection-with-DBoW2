@@ -123,11 +123,13 @@ void featureTracking(Mat img_1, Mat img_2, vector<Point2f> &points1, vector<Poin
 
 void featureDetection(Mat img, vector<Point2f> &points)
 {
+  cv::Ptr<cv::ORB> orb = cv::ORB::create(1300);
+  cv::Mat mask;
   vector<KeyPoint> keypoints;
-  int fast_threshold = 20;
-  bool nonmaxSupression = true;
+  cv::Mat descriptors;
+  
+  orb->detectAndCompute(img, mask, keypoints, descriptors);
 
-  cv::FAST(img, keypoints, fast_threshold, nonmaxSupression);
   KeyPoint::convert(keypoints, points, vector<int>());
 }
 
@@ -138,10 +140,6 @@ int main(int argc, char **argv)
   vector<pair<int, int>> loop_detected;
   loadFeatures(features);
   testVocCreation(features, loop_detected);
-  // for (int i = 0; i < loop_detected.size(); i++)
-  // {
-  //   cout << loop_detected[i].first << "//" <<loop_detected[i].second << endl;
-  // }
 
   bool renderFeatures = false;
   if (argc > 1)
@@ -265,16 +263,17 @@ int main(int argc, char **argv)
 
     int x = int(t_f.at<double>(0)) + 600;
     int y = int(t_f.at<double>(2)) + 100;
+
+    circle(traj, cv::Point(x, y), 1, CV_RGB(255, 0, 0), 2);
+    circle(traj, cv::Point(groundPoses[numFrame].x + 600, groundPoses[numFrame].y + 100), 1, CV_RGB(0, 255, 0), 2);
     for (int i = 0; i < loop_detected.size(); i++)
     {
       if (numFrame == loop_detected[i].first)
       {
         //Loop Detection -> blue
-        circle(traj, cv::Point(x, y), 1, CV_RGB(0, 0, 255), 2);
+        circle(traj, cv::Point(x, y), 3, CV_RGB(0, 0, 255), 3);
       }
     }
-    circle(traj, cv::Point(x, y), 1, CV_RGB(255, 0, 0), 2);
-    circle(traj, cv::Point(groundPoses[numFrame].x + 600, groundPoses[numFrame].y + 100), 1, CV_RGB(0, 255, 0), 2);
 
     rectangle(traj, cv::Point(10, 30), cv::Point(550, 50), CV_RGB(0, 0, 0), CV_FILLED);
     sprintf(text, "Coordinates: x = %02fm y = %02fm z = %02fm", t_f.at<double>(0), t_f.at<double>(1), t_f.at<double>(2));
