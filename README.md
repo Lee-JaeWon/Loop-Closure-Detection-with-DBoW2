@@ -9,3 +9,10 @@ Visual vocabulary is not generated simultaneously with mapping, and visual vocab
 ### Code Overview
 `main.cpp` : Main code containing visual odometry and loop detection processes.<br>
 `using_DBoW.h` : Functions with DBoW2
+
+### Build and Excute
+1. git clone this repo
+2. `mkdir build && cd build`<br>
+3. `cmake ..`<br>
+4. `make`<br>
+5. `./mono_vo viz`<br>
